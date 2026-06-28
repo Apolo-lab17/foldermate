@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FolderMate — Organiza y encuentra tus archivos</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0D1117;
+      --surface:   #161B22;
+      --border:    #21262D;
+      --blue:      #2563EB;
+      --blue-dim:  #1D4ED8;
+      --green:     #22C55E;
+      --text:      #E6EDF3;
+      --muted:     #8B949E;
+      --badge-bg:  #1A2332;
+      --badge-txt: #58A6FF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      height: 56px;
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; }
+    .nav-logo span { color: var(--blue); }
+    .nav-badge {
+      font-size: .7rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase;
+      background: var(--badge-bg); color: var(--badge-txt);
+      border: 1px solid #30363D;
+      padding: .15rem .55rem; border-radius: 999px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 760px; margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+    }
+    .beta-pill {
+      display: inline-block;
+      font-size: .75rem; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase;
+      background: rgba(37,99,235,.15); color: var(--badge-txt);
+      border: 1px solid rgba(37,99,235,.35);
+      padding: .3rem .85rem; border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 em { font-style: normal; color: var(--blue); }
+    .hero p {
+      font-size: 1.1rem; color: var(--muted);
+      max-width: 560px; margin: 0 auto 2.5rem;
+    }
+
+    /* ── DOWNLOAD BUTTONS ── */
+    .downloads {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: .55rem;
+      padding: .8rem 1.6rem;
+      border-radius: 8px;
+      font-size: .95rem; font-weight: 600;
+      text-decoration: none;
+      transition: transform .15s, box-shadow .15s, background .15s;
+      cursor: pointer; border: none;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--blue); color: #fff;
+      box-shadow: 0 0 0 0 rgba(37,99,235,0);
+    }
+    .btn-primary:hover {
+      background: var(--blue-dim);
+      box-shadow: 0 8px 24px rgba(37,99,235,.35);
+    }
+    .btn-secondary {
+      background: var(--surface); color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: #1C2128; }
+
+    .hero-note {
+      font-size: .78rem; color: var(--muted);
+      margin-top: .75rem;
+    }
+    .hero-note a { color: var(--badge-txt); text-decoration: none; }
+    .hero-note a:hover { text-decoration: underline; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      max-width: 900px; margin: 0 auto;
+      border: none; border-top: 1px solid var(--border);
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      max-width: 900px; margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    .section-label {
+      font-size: .75rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 2.5rem; text-align: center;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color .2s, transform .2s;
+    }
+    .card:hover { border-color: var(--blue); transform: translateY(-3px); }
+    .card-icon {
+      font-size: 1.8rem; margin-bottom: 1rem;
+      display: block;
+    }
+    .card h3 {
+      font-size: 1rem; font-weight: 700;
+      margin-bottom: .5rem; letter-spacing: -.01em;
+    }
+    .card p { font-size: .88rem; color: var(--muted); }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      max-width: 700px; margin: 0 auto;
+      padding: 0 2rem 5rem;
+      text-align: center;
+    }
+    .steps {
+      display: flex; flex-direction: column; gap: 0;
+      margin-top: 2rem; text-align: left;
+    }
+    .step {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(37,99,235,.15);
+      border: 1px solid rgba(37,99,235,.4);
+      color: var(--badge-txt);
+      font-size: .8rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: .1rem;
+    }
+    .step-body h4 { font-size: .95rem; font-weight: 600; margin-bottom: .25rem; }
+    .step-body p  { font-size: .85rem; color: var(--muted); }
+
+    /* ── BETA BANNER ── */
+    .beta-banner {
+      max-width: 900px; margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+    .beta-box {
+      background: linear-gradient(135deg, #111827 0%, #1A2332 100%);
+      border: 1px solid rgba(37,99,235,.35);
+      border-radius: 16px;
+      padding: 2.5rem;
+      display: flex; gap: 2rem; align-items: center;
+      flex-wrap: wrap;
+    }
+    .beta-box-text { flex: 1; min-width: 240px; }
+    .beta-box-text h2 {
+      font-size: 1.3rem; font-weight: 700;
+      margin-bottom: .5rem; letter-spacing: -.02em;
+    }
+    .beta-box-text p { font-size: .9rem; color: var(--muted); }
+    .beta-box-text p strong { color: var(--text); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem;
+      font-size: .8rem; color: var(--muted);
+    }
+    footer a { color: var(--badge-txt); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── ANTIVIRUS WARNING ── */
+    .av-warning {
+      max-width: 700px; margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+    .av-box {
+      background: rgba(234,179,8,.07);
+      border: 1px solid rgba(234,179,8,.25);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      font-size: .85rem; color: #FDE68A;
+      display: flex; gap: .75rem; align-items: flex-start;
+    }
+    .av-box span { font-size: 1.1rem; flex-shrink: 0; margin-top: .05rem; }
+
+    @media (max-width: 480px) {
+      .hero { padding: 4rem 1.25rem 3rem; }
+      .beta-box { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Folder<span>Mate</span></div>
+    <span class="nav-badge">Beta pública</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="beta-pill">🧪 Versión Beta — buscamos testers</div>
+    <h1>Organiza y encuentra<br><em>cualquier archivo</em><br>en segundos</h1>
+    <p>
+      FolderMate son dos herramientas gratuitas para Windows: un organizador automático
+      que clasifica tus carpetas, y un buscador que localiza cualquier archivo al instante.
+      Sin instalación, solo doble clic.
+    </p>
+    <div class="downloads">
+      <a class="btn btn-primary"
+         href="https://github.com/Apolo-lab17/foldermate/raw/main/OrganizadorArchivos.exe"
+         download>
+        📂 Descargar Organizador
+      </a>
+      <a class="btn btn-secondary"
+         href="https://github.com/Apolo-lab17/foldermate/raw/main/BuscadorArchivos.exe"
+         download>
+        🔍 Descargar Buscador
+      </a>
+    </div>
+    <p class="hero-note">
+      Windows · Gratis · Sin instalación ·
+      <a href="https://github.com/Apolo-lab17/foldermate" target="_blank">Ver código fuente →</a>
+    </p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- FEATURES -->
+  <section class="features">
+    <p class="section-label">Qué hace cada herramienta</p>
+    <div class="cards">
+      <div class="card">
+        <span class="card-icon">📂</span>
+        <h3>Organizador de Archivos</h3>
+        <p>Elige una carpeta y clasifica automáticamente todos tus archivos en subcarpetas: Imágenes, Documentos, Videos, Audio, Comprimidos y más.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔍</span>
+        <h3>Buscador de Archivos</h3>
+        <p>Busca por nombre, extensión o fecha de modificación. Los resultados aparecen en tabla y con doble clic abres la carpeta directamente.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚡</span>
+        <h3>Sin instalación</h3>
+        <p>Descarga el .exe y ábrelo con doble clic. No necesitas instalar Python ni ninguna dependencia adicional.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🛡️</span>
+        <h3>Seguro y transparente</h3>
+        <p>El código fuente está disponible públicamente en GitHub. Si un archivo está en uso o protegido, el programa lo omite y continúa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <p class="section-label">Cómo usarlo</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Descarga el programa</h4>
+          <p>Haz clic en uno de los botones de arriba. Se descargará un archivo .exe de unos 15 MB.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Ábrelo con doble clic</h4>
+          <p>Si Windows muestra una advertencia, haz clic en "Más información" → "Ejecutar de todas formas". Es un falso positivo habitual en programas nuevos.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Elige tu carpeta</h4>
+          <p>Usa el botón 📂 para seleccionar la carpeta que quieres organizar o donde quieres buscar.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>¡Listo!</h4>
+          <p>Pulsa el botón principal y FolderMate hace el resto. Al terminar verás un resumen de todo lo que hizo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANTIVIRUS WARNING -->
+  <div class="av-warning">
+    <div class="av-box">
+      <span>⚠️</span>
+      <div>
+        <strong>Nota sobre antivirus:</strong> algunos antivirus pueden marcar el .exe como sospechoso.
+        Es un falso positivo conocido en programas generados con PyInstaller.
+        Puedes revisar el código fuente completo en
+        <a href="https://github.com/Apolo-lab17/foldermate" target="_blank" style="color:#FDE68A; font-weight:600;">GitHub</a>
+        antes de ejecutarlo.
+      </div>
+    </div>
+  </div>
+
+  <!-- BETA BANNER -->
+  <section class="beta-banner">
+    <div class="beta-box">
+      <div class="beta-box-text">
+        <h2>🧪 Estamos en Beta pública</h2>
+        <p>
+          FolderMate está en sus primeras versiones y tu opinión vale mucho.
+          <strong>¿Algo no funciona? ¿Qué le añadirías?</strong>
+          Abre un issue en GitHub o déjanos un comentario en Reddit.
+          Cada reporte nos ayuda a mejorar.
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:.75rem;">
+        <a class="btn btn-secondary"
+           href="https://github.com/Apolo-lab17/foldermate/issues/new"
+           target="_blank">
+          🐛 Reportar un problema
+        </a>
+        <a class="btn btn-secondary"
+           href="https://github.com/Apolo-lab17/foldermate"
+           target="_blank">
+          ⭐ Ver en GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>
+      FolderMate Beta · Hecho con Python y Tkinter ·
+      <a href="https://github.com/Apolo-lab17/foldermate" target="_blank">GitHub</a>
+    </p>
+    <p style="margin-top:.4rem;">
+      Gratis y de código abierto · Windows 10 / 11
+    </p>
+  </footer>
+
+</body>
+</html>
